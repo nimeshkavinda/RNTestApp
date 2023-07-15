@@ -22,6 +22,7 @@
       "@app/components/*": ["./components/*"],
       "@app/routes/*": ["./routes/*"],
       "@app/screens/*": ["./screens/*"],
+      "@app/theme/*": ["./theme/*"],
       "@proj/assets/*": ["./assets/*"]
     }
   },

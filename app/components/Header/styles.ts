@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 10,
     paddingHorizontal: 16,
+    zIndex: 2,
   },
   locationText: {},
   notificationButton: {

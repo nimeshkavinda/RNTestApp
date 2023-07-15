@@ -7,8 +7,8 @@ import {colors} from '@app/theme';
 import styles from './styles';
 
 export interface TextInputWrapperProps extends TextInputProps {
-  control: Control<any>;
-  name: string;
+  control?: Control<any>;
+  name?: string;
   rules?: {};
   icon: string;
 }
@@ -19,10 +19,22 @@ export function TextInputWrapper({
   rules,
   secureTextEntry,
   icon,
+  style,
   ...rest
 }: TextInputWrapperProps): JSX.Element {
   const [hidePassword, setHidePassword] = useState(true);
   const toggleHidePassword = () => setHidePassword(!hidePassword);
+
+  if (!control || !name || !rules) {
+    return (
+      <View style={[styles.container, style]}>
+        <View style={styles.inputContainer}>
+          <Icon name={icon} size={30} color={colors.darkGray} />
+          <TextInput {...rest} style={styles.input} />
+        </View>
+      </View>
+    );
+  }
 
   if (secureTextEntry) {
     return (

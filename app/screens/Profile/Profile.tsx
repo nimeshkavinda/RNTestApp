@@ -1,16 +1,20 @@
 import React from 'react';
-import {View, Text} from 'react-native';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {HomeStackParamList} from '../../routes/HomeStack';
+import {Header, ProfileImg, SettingsMenu} from '@app/components';
+import styles from './styles';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'Profile'>;
-
-const Profile = ({}: Props) => {
+const Profile = () => {
   return (
-    <View>
-      <Text>Profile page</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Header />
+      <ProfileImg
+        imgUrl="https://i.pravatar.cc/100"
+        name="John Doe"
+        role="Member"
+      />
+      <SettingsMenu />
+    </SafeAreaView>
   );
 };
 

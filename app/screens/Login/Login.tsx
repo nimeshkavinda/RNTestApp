@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StatusBar} from 'react-native';
 import {useForm} from 'react-hook-form';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {AuthStackParamList} from '../../routes/AuthStack';
@@ -23,7 +24,7 @@ const Login = ({navigation}: Props) => {
     console.log('Login data: ', data);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar animated barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.imgContainer}>
         <LoginVector height={150} width={250} />
@@ -50,7 +51,7 @@ const Login = ({navigation}: Props) => {
         onPress={handleSubmit(onSubmit)}
         style={styles.button}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

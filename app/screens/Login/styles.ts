@@ -4,7 +4,7 @@ import {colors} from '@app/theme';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     justifyContent: 'center',
     paddingHorizontal: 20,
   },

@@ -45,12 +45,19 @@ jobs:
         with:
           gradlePath: android/app/build.gradle
           versionCode: ${{ env.version_code }}
+          
+      - name: Make Gradlew Executable
+        run: cd android && chmod +x ./gradlew
+
+      - name: Build Android App Bundle
+        run: |
+          cd android && ./gradlew bundleRelease --no-daemon
 
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: android/app/release
+          releaseDirectory: android/app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_FILE }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

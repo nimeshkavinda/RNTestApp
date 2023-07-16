@@ -1,13 +1,17 @@
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFocusEffect} from '@react-navigation/native';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
+import {HomeStackParamList} from '../../routes/HomeStack';
 import {Header, ProfileImg, SettingsMenu, Spinner} from '@app/components';
 import {useAppSelector, useAppDispatch} from '../../hooks';
 import {getProfile} from '../../store/slices/auth';
 import styles from './styles';
 
-const Profile = () => {
+type Props = NativeStackScreenProps<HomeStackParamList, 'Profile'>;
+
+const Profile = ({navigation}: Props) => {
   const dispatch = useAppDispatch();
   const {getProfileStatus, user} = useAppSelector(state => state.auth);
 
@@ -31,7 +35,7 @@ const Profile = () => {
           role={user.role}
         />
       )}
-      <SettingsMenu />
+      <SettingsMenu navigation={navigation} />
     </SafeAreaView>
   );
 };

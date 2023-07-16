@@ -2,9 +2,7 @@ import React, {useState} from 'react';
 import {View, Text, StatusBar, Alert} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import {AuthStackParamList} from '../../routes/AuthStack';
 import {Button, TextInput} from '@app/components';
 import LoginVector from '@proj/assets/undraw_login_re_4vu2.svg';
 import {useAppDispatch} from '../../hooks';
@@ -13,9 +11,7 @@ import {setSecureValue} from '../../utils';
 import rules from './rules';
 import styles from './styles';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
-
-const Login = ({}: Props) => {
+const Login = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 

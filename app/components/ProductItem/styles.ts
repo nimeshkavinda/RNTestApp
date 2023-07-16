@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 10,
+    borderRadius: theme.borderRadius,
     borderBottomLeftRadius: theme.borderRadius,
     borderBottomRightRadius: theme.borderRadius,
     margin: 8,

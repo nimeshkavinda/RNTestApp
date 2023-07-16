@@ -8,13 +8,14 @@ import {useAppDispatch} from '../../hooks';
 import {globalLogOut} from '../../store/slices/auth';
 import styles from './styles';
 
-export function SettingsMenu(): JSX.Element {
+export function SettingsMenu({navigation}: any): JSX.Element {
   const dispatch = useAppDispatch();
 
   const handleLogOut = async () => {
     dispatch(globalLogOut());
     await removeSecureValue('accessToken');
     await removeSecureValue('refreshToken');
+    navigation.navigate('Login');
   };
 
   return (

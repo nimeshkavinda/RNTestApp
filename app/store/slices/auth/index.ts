@@ -59,7 +59,11 @@ export const getProfile = createAsyncThunk('auth/getProfile', async () => {
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    globalLogOut: state => {
+      state.loggedIn = false;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(login.pending, state => {
@@ -98,8 +102,10 @@ const authSlice = createSlice({
   },
 });
 
+export const {globalLogOut} = authSlice.actions;
 export const authActions = {
   ...authSlice.actions,
+  globalLogOut,
 };
 export const authReducer = authSlice.reducer;
 

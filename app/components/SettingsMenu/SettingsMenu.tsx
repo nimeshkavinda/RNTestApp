@@ -3,11 +3,20 @@ import {View} from 'react-native';
 
 import {SettingsMenuItem} from './SettingsMenuItem';
 import {SettingsItems} from '../../data/settingsMenuItems';
+import {removeSecureValue} from '../../utils';
+import {useAppDispatch} from '../../hooks';
+import {globalLogOut} from '../../store/slices/auth';
 import styles from './styles';
 
-export interface SettingsMenuProps {}
+export function SettingsMenu(): JSX.Element {
+  const dispatch = useAppDispatch();
 
-export function SettingsMenu({}: SettingsMenuProps): JSX.Element {
+  const handleLogOut = async () => {
+    dispatch(globalLogOut());
+    await removeSecureValue('accessToken');
+    await removeSecureValue('refreshToken');
+  };
+
   return (
     <View style={styles.menuContainer}>
       {SettingsItems.map((item, index) => (
@@ -17,6 +26,9 @@ export function SettingsMenu({}: SettingsMenuProps): JSX.Element {
           icon={item.icon}
           color={item.color}
           style={index !== SettingsItems.length - 1 && styles.borderBottom}
+          onPress={
+            index === SettingsItems.length - 1 ? handleLogOut : undefined
+          }
         />
       ))}
     </View>

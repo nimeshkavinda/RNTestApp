@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   SectionList,
@@ -6,22 +6,85 @@ import {
   TouchableOpacity,
   View,
   SectionListRenderItem,
+  RefreshControl,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import {HomeStackParamList} from '../../routes/HomeStack';
-import {Header, TextInput, Icon, ProductItem} from '@app/components';
+import {Header, TextInput, Icon, ProductItem, Spinner} from '@app/components';
 import {colors} from '@app/theme';
 import styles from './styles';
-import {SECTIONS} from '../../data/mockData';
-import type {Banner, Product, Section} from '../../data/mockData';
+import {SECTIONS} from '../../data/productTypes';
+import type {Banner, Product, Section} from '../../data/productTypes';
+import {useAppDispatch, useAppSelector} from '../../hooks';
+import {getProfile} from '../../store/slices/auth';
+import {getProducts} from '../../store/slices/product';
 
 const NO_OF_COLUMNS = 2;
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 
 const Home = ({}: Props) => {
+  const dispatch = useAppDispatch();
+  const [productsData, setProductsData] = useState<Product[]>([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const {getProductsStatus} = useAppSelector(state => state.product);
+
+  const onRefresh = () => {
+    setIsRefreshing(true);
+    dispatch(getProducts(page))
+      .then(responseData => {
+        setProductsData(responseData.payload.data.products);
+        setPage(1);
+        setIsRefreshing(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setIsRefreshing(false);
+      });
+    dispatch(getProfile());
+  };
+
+  useEffect(() => {
+    fetchProductsData();
+    dispatch(getProfile());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchProductsData = () => {
+    setIsLoading(true);
+    dispatch(getProducts(page))
+      .then(responseData => {
+        const newProductsData = [
+          ...productsData,
+          ...responseData.payload.data.products,
+        ];
+        setProductsData(newProductsData);
+        setPage(prevPage => prevPage + 1);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  };
+
+  const handleLoadMore = () => {
+    if (!isLoading) {
+      fetchProductsData();
+    }
+  };
+
+  const productsSection: Section = {
+    title: 'Recommended For You',
+    data: productsData,
+  };
+
+  const updatedSections: Section[] = [...SECTIONS, productsSection];
+
   const renderBanner = () => {
     return (
       <Image
@@ -68,13 +131,13 @@ const Home = ({}: Props) => {
       .slice(index, index + NO_OF_COLUMNS)
       .map(item => (
         <ProductItem
-          key={item.id}
-          id={item.id}
-          title={item.title}
+          key={item.code}
+          id={item.code}
+          title={item.name}
           price={item.price}
-          rating={item.rating}
+          rating={item.rate}
           discount={item.discount}
-          imgUrl={item.imgUrl}
+          imgUrl={item.images[0]?.url}
         />
       ));
 
@@ -84,17 +147,27 @@ const Home = ({}: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
+      {getProductsStatus === 'loading' && <Spinner />}
       <TextInput
         icon="magnify"
         placeholder="Search for items"
         style={styles.search}
       />
       <SectionList
-        sections={SECTIONS}
-        keyExtractor={(item: any, index: number) => item.id + index}
+        sections={updatedSections}
+        keyExtractor={(item: any) => item.code}
         ListHeaderComponent={renderBanner}
         renderSectionHeader={renderSectionHeader}
         renderItem={renderProduct}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.1}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={[colors.secondary]}
+          />
+        }
       />
     </SafeAreaView>
   );

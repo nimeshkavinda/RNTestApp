@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Android App Bundle
         run: |
-          cd android && ./gradlew bundleRelease --no-daemon
+          cd android && ./gradlew assembleRelease --no-daemon
 
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK

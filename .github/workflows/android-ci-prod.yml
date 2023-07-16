@@ -1,0 +1,91 @@
+name: Android CI-Prod
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  deploy:
+    name: Building Android
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 16
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Define version code with offset
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+          INITIAL_VERSION_CODE: 1
+        run: |
+          VERSION_CODE=$((INITIAL_VERSION_CODE + RUN_NUMBER))
+          echo "version_code=$VERSION_CODE" >> $GITHUB_ENV
+
+      - name: Update version code
+        uses: chkfung/android-version-actions@v1.1
+        with:
+          gradlePath: android/app/build.gradle
+          versionCode: ${{ env.version_code }}
+
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+         path: ~/.gradle/wrapper
+         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v2
+        with:
+         path: ~/.gradle/caches
+         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+         restore-keys: |
+           ${{ runner.os }}-gradle-caches-
+          
+      - name: Make Gradlew Executable
+        run: cd android && chmod +x ./gradlew
+
+      - name: Build Android App Bundle
+        run: |
+          cd android && ./gradlew bundleRelease --no-daemon
+
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        id: sign_app
+        with:
+          releaseDirectory: android/app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Signed app bundle
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+      - name: Create Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+           generate_release_notes: true
+           prerelease: true
+           files: ${{steps.sign_app.outputs.signedReleaseFile}}

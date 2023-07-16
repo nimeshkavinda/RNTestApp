@@ -50,7 +50,7 @@ jobs:
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: /home/runner/work/${{ secrets.PROJECT_NAME }}/${{ secrets.PROJECT_NAME }}/android/app/release
+          releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_FILE }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}

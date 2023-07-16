@@ -14,9 +14,11 @@ function NavigationStack() {
   useEffect(() => {
     const retrieveToken = async () => {
       try {
-        const retrievedToken = await getSecureValue('accessToken');
-        console.log('persistedToken: ', retrievedToken);
-        setPersistedToken(retrievedToken);
+        const accToken = await getSecureValue('accessToken');
+        console.log('accToken: ', accToken);
+        const refreshToken = await getSecureValue('refreshToken');
+        console.log('refToken: ', refreshToken);
+        setPersistedToken(accToken);
       } catch (error) {
         console.log('Error retrieving token:', error);
       }

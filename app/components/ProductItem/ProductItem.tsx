@@ -7,18 +7,18 @@ import theme from '@app/theme';
 import styles from './styles';
 
 export interface ProductItemProps {
-  id: number;
+  id: string;
   title: string;
-  price: string;
+  price: number;
   rating: string;
-  discount: string;
+  discount: number;
   imgUrl: string;
   onPress?: () => void;
   onAddToCart?: () => void;
 }
 
 export function ProductItem({
-  //   id,
+  // id,
   title,
   price,
   rating,
@@ -30,7 +30,7 @@ export function ProductItem({
   return (
     <TouchableOpacity style={styles.productItem} onPress={onPress}>
       <View style={styles.discount}>
-        <Text style={styles.discountText}>{discount}</Text>
+        <Text style={styles.discountText}>{`${discount}%`}</Text>
       </View>
       <Image
         style={styles.productImg}
@@ -46,8 +46,12 @@ export function ProductItem({
       </Text>
       <View style={styles.productItemFooter}>
         <View style={styles.priceContainer}>
-          <Text style={[styles.priceText, styles.halfOpacity]}>{price}</Text>
-          <Text style={styles.priceText}>{price}</Text>
+          <Text
+            style={[
+              styles.priceText,
+              styles.halfOpacity,
+            ]}>{`LKR ${price}`}</Text>
+          <Text style={styles.priceText}>{`LKR ${price}`}</Text>
         </View>
         <TouchableOpacity onPress={onAddToCart}>
           <LinearGradient

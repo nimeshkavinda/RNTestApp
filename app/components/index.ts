@@ -6,6 +6,7 @@ import ProductItem from './ProductItem';
 import ProfileImg from './ProfileImg';
 import SettingsMenu from './SettingsMenu';
 import NotFound from './NotFound';
+import Spinner from './Spinner';
 
 export {
   Button,
@@ -16,4 +17,5 @@ export {
   ProfileImg,
   SettingsMenu,
   NotFound,
+  Spinner,
 };

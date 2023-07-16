@@ -8,7 +8,6 @@ import {getSecureValue} from '../utils';
 
 function NavigationStack() {
   const loggedIn = useAppSelector(state => state.auth.loggedIn);
-  const accessToken = useAppSelector(state => state.auth.accessToken);
   const [persistedToken, setPersistedToken] = useState<string | false>();
 
   useEffect(() => {
@@ -25,10 +24,10 @@ function NavigationStack() {
     };
 
     retrieveToken();
-  }, [loggedIn, accessToken, persistedToken]);
+  }, [loggedIn, persistedToken]);
 
   const renderContent = () => {
-    if (loggedIn || accessToken || persistedToken) {
+    if (loggedIn || persistedToken) {
       return <HomeScreensStack />;
     }
     return <AuthScreensStack />;

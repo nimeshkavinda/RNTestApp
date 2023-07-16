@@ -1,6 +1,10 @@
 import {useState, useEffect} from 'react';
 import {PermissionsAndroid, PermissionStatus} from 'react-native';
 import Geolocation, {GeoPosition} from 'react-native-geolocation-service';
+import Geocoder from 'react-native-geocoding';
+import {GOOGLE_MAPS_API_KEY} from '@env';
+
+Geocoder.init(GOOGLE_MAPS_API_KEY);
 
 const useLocation = () => {
   const [hasPermission, setHasPermission] = useState<PermissionStatus | null>(
@@ -9,6 +13,7 @@ const useLocation = () => {
   const [location, setLocation] = useState<GeoPosition>({
     coords: {},
   } as GeoPosition);
+  const [geoLocation, setGeoLocation] = useState({});
 
   const requestLocationPermission = async () => {
     try {
@@ -36,7 +41,7 @@ const useLocation = () => {
     if (hasPermission === 'granted') {
       Geolocation.getCurrentPosition(
         position => {
-          console.log(position);
+          // console.log(position);
           setLocation(position);
         },
         error => {
@@ -48,11 +53,25 @@ const useLocation = () => {
     }
   }, [hasPermission]);
 
+  useEffect(() => {
+    if (location.coords.latitude && location.coords.longitude) {
+      Geocoder.from(location.coords.latitude, location.coords.longitude)
+        .then(json => {
+          console.log(json);
+          setGeoLocation(json);
+        })
+        .catch(error => {
+          // console.warn(error);
+          setGeoLocation({});
+        });
+    }
+  }, [location]);
+
   const handlePermissionRequest = () => {
     requestLocationPermission();
   };
 
-  return {location, hasPermission, handlePermissionRequest};
+  return {location, geoLocation, hasPermission, handlePermissionRequest};
 };
 
 export default useLocation;

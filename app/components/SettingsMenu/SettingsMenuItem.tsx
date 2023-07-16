@@ -10,7 +10,7 @@ export interface SettingsMenuItemProps {
   icon: string;
   color: string;
   style: {};
-  onPress: () => void;
+  onPress: (() => void) | undefined;
 }
 
 export function SettingsMenuItem({

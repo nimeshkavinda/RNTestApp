@@ -45,13 +45,27 @@ jobs:
         with:
           gradlePath: android/app/build.gradle
           versionCode: ${{ env.version_code }}
+
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+         path: ~/.gradle/wrapper
+         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v2
+        with:
+         path: ~/.gradle/caches
+         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+         restore-keys: |
+           ${{ runner.os }}-gradle-caches-
           
       - name: Make Gradlew Executable
         run: cd android && chmod +x ./gradlew
 
       - name: Build Android App Bundle
         run: |
-          cd android && ./gradlew bundleRelease --no-daemon
+          cd android && ./gradlew assembleRelease
 
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
@@ -67,10 +81,3 @@ jobs:
         with:
           name: Signed app bundle
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
-
-      - name: Create Github Release
-        uses: softprops/action-gh-release@v1
-        with:
-           generate_release_notes: true
-           prerelease: true
-           files: ${{steps.sign_app.outputs.signedReleaseFile}}

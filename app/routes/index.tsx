@@ -1,14 +1,32 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 
 import HomeScreensStack from '../../app/routes/HomeStack';
 import AuthScreensStack from '../../app/routes/AuthStack';
+import {useAppSelector} from '../hooks';
+import {getSecureValue} from '../utils';
 
 function NavigationStack() {
-  const renderContent = () => {
-    const loggedIn = true;
+  const loggedIn = useAppSelector(state => state.auth.loggedIn);
+  const accessToken = useAppSelector(state => state.auth.accessToken);
+  const [persistedToken, setPersistedToken] = useState<string | false>();
 
-    if (loggedIn) {
+  useEffect(() => {
+    const retrieveToken = async () => {
+      try {
+        const retrievedToken = await getSecureValue('accessToken');
+        console.log('persistedToken: ', retrievedToken);
+        setPersistedToken(retrievedToken);
+      } catch (error) {
+        console.log('Error retrieving token:', error);
+      }
+    };
+
+    retrieveToken();
+  }, [loggedIn, accessToken, persistedToken]);
+
+  const renderContent = () => {
+    if (loggedIn || accessToken || persistedToken) {
       return <HomeScreensStack />;
     }
     return <AuthScreensStack />;
